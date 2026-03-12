@@ -2,27 +2,30 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_HUB_USER = 'sittyan' // Change this!
-        IMAGE_NAME = 'finead-todo-app'
+        DOCKER_HUB_USER = 'sittyan'
+        IMAGE_NAME = 'todo-app'
         DOCKER_HUB_CREDS = 'docker-hub-credentials'
     }
 
     stages {
+
         stage('Build') {
             steps {
+                echo 'Installing dependencies...'
                 sh 'npm install'
             }
         }
 
         stage('Test') {
             steps {
-                // This ensures the app is stable before building the image
-                sh 'npm test || echo "Tests skipped or failed, check logs"'
+                echo 'Running tests...'
+                sh 'npm test || true'
             }
         }
 
         stage('Containerize') {
             steps {
+                echo 'Building Docker image...'
                 sh "docker build -t ${DOCKER_HUB_USER}/${IMAGE_NAME}:latest ."
             }
         }
@@ -35,8 +38,9 @@ pipeline {
                 }
             }
         }
+
     }
-    
+
     post {
         always {
             sh "docker rmi ${DOCKER_HUB_USER}/${IMAGE_NAME}:latest || true"
