@@ -1,6 +1,9 @@
 pipeline {
-    agent any
-
+    agent {
+        docker {
+            image 'node:18-alpine'
+        }
+    }
     environment {
         DOCKER_HUB_USER = 'sittyan'
         IMAGE_NAME = 'todo-app'
